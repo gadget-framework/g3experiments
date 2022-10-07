@@ -135,7 +135,6 @@ g3a_hcr_assess <- function (
 
 g3a_predate_catchability_hcr <- function (
     nonprojection_f = 0,
-    step_prop_f = quote( rep(1 / total_steps, total_steps) ),
     fleet_prop_fs,
     implerr_f = 1,
     hcr_name = 'hcr') {
@@ -148,9 +147,8 @@ g3a_predate_catchability_hcr <- function (
 
     return(gadget3:::f_substitute(~(
         # TODO: What we really want here is stock_intersect(hcr, stock_ss(hcr__tac)), but that's not easy.
-        if (cur_year_projection) (stock_with(hcr, sum(hcr__tac)) * step_prop_f * fleet_prop_f * implerr_f) else nonprojection_f
+        if (cur_year_projection) (stock_with(hcr, sum(hcr__tac)) * (1 / total_steps) * fleet_prop_f * implerr_f) else nonprojection_f
     ), list(
-        step_prop_f = step_prop_f,
         fleet_prop_f = gadget3:::list_to_stock_switch(fleet_prop_fs, stock_var = "fleet_stock"),
         nonprojection_f = nonprojection_f)))
 }
