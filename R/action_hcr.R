@@ -64,7 +64,8 @@ g3a_hcr_biomass_weighted <- function(
     ), list(
         alpha = alpha,
         l50 = l50,
-        scale = scale))
+        scale = scale,
+        assesserr_f = assesserr_f))
 }
 
 g3a_hcr_assess <- function (
