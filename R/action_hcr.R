@@ -49,18 +49,21 @@ g3a_hcr_tac_singletrigger <- function(
 #         list(hcr__trigger = x, hcr__fishable = 1, stock_ss = identity)), 0, 100)
 
 g3a_hcr_biomass_weighted <- function(
-        # TODO: More desciptive names?
-        param0,
-        param1,
-        param2,
+        alpha,
+        l50,
+        scale,
         by_stock = TRUE) {
     gadget3:::f_substitute(quote(
-        # TODO: Is this right? The example has triggercoeffs=c(0,0,0,0,0,1), which I assume is "all the mature", but it's actually half.
-        sum( param2 * (stock_ss(stock__num) * stock_ss(stock__wgt)) / ( 1.0 + exp(-param0 * (param1 - stock__midlen))) )
+        # TODO: This is just g3_suitability_exponentiall50(), slot for suitability?
+        sum(
+            scale * (stock_ss(stock__num) * stock_ss(stock__wgt))
+                /
+            ( 1.0 + exp(-alpha * (l50 - stock__midlen)) )
+        )
     ), list(
-        param0 = param0,
-        param1 = param1,
-        param2 = param2))
+        alpha = alpha,
+        l50 = l50,
+        scale = scale))
 }
 
 g3a_hcr_assess <- function (
