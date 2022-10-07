@@ -35,8 +35,8 @@ g3a_hcr_tac_singletrigger <- function(
         by_stock = FALSE) {  # TODO: Ideally would be by_stock = hcr, but cannae do that.
     gadget3:::f_substitute(quote(
         (
-            hr_low * logspace_add(-logspace_add(stock_ss(hcr__trigger), trigger), 0) * exp(trigger) +
-            hr_high * (1 - logspace_add(-logspace_add(stock_ss(hcr__trigger), trigger), 0) * exp(trigger))
+            hr_low * bounded(stock_ss(hcr__trigger) - trigger, 0, 1) +
+            hr_high * (1 - bounded(stock_ss(hcr__trigger) - trigger, 0, 1))
         ) * stock_ss(hcr__fishable)
     ), list(
         hr_low = hr_low,
