@@ -118,7 +118,7 @@ g3a_hcr_assess <- function (
     out[[gadget3:::step_id(run_at, hcr, action_name, 2)]] <- gadget3:::g3_step(gadget3:::f_substitute(~{
         debug_label("g3a_hcr_assess: Assess ", hcr, " and reset TAC")
         if (assess_run_f) stock_iterate(hcr, {
-            stock_ss(hcr__tac) <- prevtacweight * stock_ss(hcr__tac) + (prevtacweight - 1) * tac_f
+            stock_ss(hcr__tac) <- prevtacweight * stock_ss(hcr__tac) + (1 - prevtacweight) * tac_f
         })
     }, list(
         prevtacweight = prevtacweight,
