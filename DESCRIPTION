@@ -1,0 +1,22 @@
+Package: g3experiments
+Type: Package
+Title: Experimental gadget3 Extensions
+Version: 0.3.999
+Date: 2022-10-07
+Authors@R: c(person("Jamie", "Lentin", email="lentinj@shuttlethread.com",role = c("aut", "cre")),
+            person("Bjarki Thor", "Elvarsson", email="bjarki.elvarsson@hafogvatn.is",role = c("aut")),
+            person("Marine and Freshwater Research Institute (Iceland)", role = c("cph")))
+Maintainer: Jamie Lentin <lentinj@shuttlethread.com>
+Copyright: see file COPYRIGHTS
+Description: Experimental features for use with gadget3.
+Encoding: UTF-8
+Imports:
+    gadget3,
+Suggests:
+    knitr,
+    rmarkdown,
+    unittest (>= 1.4)
+VignetteBuilder: knitr
+License: GPL-2
+RoxygenNote: 7.0.2
+Biarch: yes
