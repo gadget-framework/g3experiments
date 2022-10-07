@@ -52,6 +52,7 @@ g3a_hcr_biomass_weighted <- function(
         alpha,
         l50,
         scale,
+        assesserr_f = 1,
         by_stock = TRUE) {
     gadget3:::f_substitute(quote(
         # TODO: This is just g3_suitability_exponentiall50(), slot for suitability?
@@ -59,7 +60,7 @@ g3a_hcr_biomass_weighted <- function(
             scale * (stock_ss(stock__num) * stock_ss(stock__wgt))
                 /
             ( 1.0 + exp(-alpha * (l50 - stock__midlen)) )
-        )
+        ) * assesserr_f
     ), list(
         alpha = alpha,
         l50 = l50,
@@ -135,6 +136,7 @@ g3a_predate_catchability_hcr <- function (
     inner_f,
     stock_prop_fs,
     fleet_prop_fs,
+    implerr_f = 1,
     hcr_name = 'hcr') {
 
     # Define identical hcr stock to g3a_hcr_assess()
@@ -145,7 +147,7 @@ g3a_predate_catchability_hcr <- function (
 
     return(gadget3:::f_substitute(~(
         # TODO: What we really want here is stock_intersect(hcr, stock_ss(hcr__tac)), but that's not easy.
-        (stock_with(hcr, sum(hcr__tac)) * stock_prop_f * fleet_prop_f) * inner_f
+        (stock_with(hcr, sum(hcr__tac)) * stock_prop_f * fleet_prop_f) * inner_f * implerr_f
     ), list(
         stock_prop_f = gadget3:::list_to_stock_switch(stock_prop_fs, stock_var = "stock"),
         fleet_prop_f = gadget3:::list_to_stock_switch(fleet_prop_fs, stock_var = "fleet_stock"),
