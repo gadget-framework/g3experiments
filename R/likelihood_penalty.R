@@ -1,3 +1,13 @@
+# # g3l_bounds_penalty
+# 
+# Defines penalty functions for a given list of parameters with bounds
+# define parameters as before but before final compilation and optimisation add
+# the penalty to the list of actions:
+# 
+# actions <- c(actions,
+#   list(g3l_bounds_penalty(tmb_param)))
+
+
 g3l_bounds_penalty <- function(tmb_param){
   
   tmp_func <- function(d){
