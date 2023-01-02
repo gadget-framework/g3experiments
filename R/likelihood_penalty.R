@@ -1,0 +1,27 @@
+g3l_bounds_penalty <- function(tmb_param){
+  
+  tmp_func <- function(d){
+    param_name <- d$switch 
+    upper_bound <- d$upper
+    lower_bound <- d$lower
+    tmp <- 
+      list(gadget3:::f_substitute(g3_formula({
+        if (cur_time == 0) {
+          nll <- nll + ((logspace_add(1e6*(g3_param(param)- upper_bound)/(upper_bound-lower_bound), 0)
+                         + logspace_add(1e6*(lower_bound - g3_param(param) )/(upper_bound-lower_bound), 0))^2)
+        }
+      }), list( param = d$switch, upper_bound = d$upper, lower_bound = d$lower)))
+    names(tmp) <- paste("010:bounds",d$switch, sep = ':')
+    return(tmp)
+  }
+  
+  bounds_action <- c()
+  for(i in 1:nrow(tmb_param)){
+    if(tmb_param$optimise[i]){
+      bounds_action <- c(bounds_action,
+                         tmp_func(tmb_param[i,]))
+    }
+  }
+  return(bounds_action)
+}
+
