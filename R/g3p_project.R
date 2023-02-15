@@ -36,9 +36,9 @@ g3p_project_advice_error <- function(par,hr_target, advice_rho = 0.4, advice_cv 
     par[grepl(hr_pattern,par$switch),'value'] <- hr_target 
   } else {
     par[grepl(hr_pattern,par$switch),'value'] <- 
-      hr_target * stats::arima.sim(n = n_years, 
+      hr_target * exp(stats::arima.sim(n = n_years, 
                                    list(ar = advice_rho), 
-                                   sd = advice_cv/sqrt(1-advice_rho^2)) 
+                                   sd = advice_cv/sqrt(1-advice_rho^2)))
   }
   
   return(par)
