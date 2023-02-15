@@ -1,7 +1,7 @@
 proj_stock_actions <- function(num_project_years,
                                mat,
                                imm = NULL,
-                               prop_ogive = FALSE,
+                               prop_ogive = NULL,
                                comp_id = 'species'){
   
   if (is.null(imm)) imm <- mat
@@ -20,10 +20,7 @@ proj_stock_actions <- function(num_project_years,
       gadget3::g3a_age(dummy_stock, output_stocks = list(imm))
     )
   
-  if (prop_ogive){
-    pfunc <- g3_suitability_exponentiall50(g3_parameterized('mat_alpha', by_stock = comp_id),
-                                           g3_parameterized('mat_l50', by_stock = comp_id)) #maturity ogive parameters 
-  }else{
+  if (is.null(prop_ogive)){
     pfunc <- 1
   }
   
