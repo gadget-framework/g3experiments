@@ -59,7 +59,7 @@ g3a_predate_catchability_hockeyfleet <- function (btrigger, hr, proportion_f = 1
   # }
   
   if (!is.null(recalc_f)) {
-    quota_var_name <- paste0("stock__hockeyfleet_", unique_action_name())
+    quota_var_name <- paste0("stock__hockeyfleet_", gadget3:::unique_action_name())
     # NB: This should remain global to model
     assign(quota_var_name, structure(
       0.0,
