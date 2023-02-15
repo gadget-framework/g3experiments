@@ -21,7 +21,7 @@ proj_stock_actions <- function(num_project_years,
     )
   
   if (is.null(prop_ogive)){
-    pfunc <- 1
+    prop_ogive <- 1
   }
   
   spawning_actions <- 
@@ -37,7 +37,7 @@ proj_stock_actions <- function(num_project_years,
                                         list(py = num_project_years,
                                              minage = gadget3::g3_stock_def(imm, 'minage'))),
             blim = g3_parameterized('blim')), 
-        proportion_f = pfunc,
+        proportion_f = prop_ogive,
         mean_f = g3_parameterized('recl', by_stock = comp_id),
         stddev_f = g3_parameterized('rec.sd', by_stock = comp_id),
         alpha_f = g3_parameterized('walpha', by_stock = comp_id),
