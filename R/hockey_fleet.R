@@ -39,9 +39,9 @@ g3a_predate_catchability_hockeyfleet <- function (btrigger, hr, proportion_f = 1
   
   # Make tertiary condition encoding quota
   
-  quota_f <- gadget3:::f_substitute(~hr * logspace_add(-1000 * s / btirgger, -1000) / -1000, 
+  quota_f <- gadget3:::f_substitute(~hr * logspace_add(-1000 * s / btrigger, -1000) / -1000, 
                                     list(hr = hr,
-                                         btirgger = btirgger,
+                                         btrigger = btrigger,
                                          s = biomass_c))
   
   # 
