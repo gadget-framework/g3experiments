@@ -4,16 +4,16 @@ g3p_project_rec <- function(par,recruitment,rec_pattern = 'project_rec', method=
   n_years <- length(par[grepl(rec_pattern,par$switch),'value'])
   if (method == "AR") {
     rec <- 
-      g3_project_rec_arima(recruitment,
+      g3p_project_rec_arima(recruitment,
                            n_years = n_years, 
                            ...) 
   } else if (method == "bootstrap") {
     rec <- 
-      g3_project_rec_bootstrap(recruitment,n_years,...)
+      g3p_project_rec_bootstrap(recruitment,n_years,...)
     
   } else if (method == "constant") {
     rec <- 
-      g3_project_rec_constant(recruitment,n_years,...)
+      g3p_project_rec_constant(recruitment,n_years,...)
     
   } else {
     stop("Method not valid, expected constant, AR or bootstrap")
