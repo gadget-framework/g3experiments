@@ -1,5 +1,5 @@
 
-g3a_predate_catchability_hockeyfleet <- function (blim,hr,proportion_f = 1,  E, sum_stocks = list(), recalc_f = NULL) {
+g3a_predate_catchability_hockeyfleet <- function (btrigger, hr, proportion_f = 1,  E, sum_stocks = list(), recalc_f = NULL) {
   #stopifnot(is.data.frame(quota_table) && identical(names(quota_table), c('biomass', 'quota')))
   #stopifnot(nrow(quota_table) > 0 && is.infinite(quota_table[nrow(quota_table), 'biomass']))
   
