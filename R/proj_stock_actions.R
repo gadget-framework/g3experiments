@@ -6,14 +6,19 @@ proj_stock_actions <- function(num_project_years,
   
   if (is.null(imm)) imm <- mat
   
-  ## Setup up a dummy stock
-  dummy_stock <- 
-    gadget3::g3_stock(c(species = gadgetutils::g3_stock_name(imm), 'dummy'),
-                      lengthgroups = seq(min(gadget3::g3_stock_def(imm, 'minlen')),
-                                         min(gadget3::g3_stock_def(mat, 'maxlen')),
-                                         1)) %>% 
-    gadget3::g3s_livesonareas(areas[c('1')]) %>% 
-    gadget3::g3s_age(minage = 0, maxage = gadget3::g3_stock_def(imm, 'minage'))
+  if(gadget3::g3_stock_def(imm, 'minage') == 0) {
+    dummy_stock <- imm
+  } else {
+    ## Setup up a dummy stock
+    dummy_stock <- 
+      gadget3::g3_stock(c(species = gadgetutils::g3_stock_name(imm), 'dummy'),
+                        lengthgroups = seq(min(gadget3::g3_stock_def(imm, 'minlen')),
+                                           min(gadget3::g3_stock_def(mat, 'maxlen')),
+                                           1)) %>% 
+      gadget3::g3s_livesonareas(areas[c('1')]) %>% 
+      gadget3::g3s_age(minage = 0, maxage = gadget3::g3_stock_def(imm, 'minage')-1)
+    
+  }
   
   dummy_actions <- 
     list(
@@ -32,8 +37,8 @@ proj_stock_actions <- function(num_project_years,
         recruitment_f = 
           g3a_spawn_recruitment_hockeystick(
             r0 = gadget3:::f_substitute(~scale * g3_param_table('project_rec',
-                                                        expand.grid(cur_year = seq(end_year - minage, 
-                                                                                   end_year + py)), ifmissing = 0),
+                                                                expand.grid(cur_year = seq(end_year - minage, 
+                                                                                           end_year + py)), ifmissing = 0),
                                         list(py = num_project_years,
                                              minage = gadget3::g3_stock_def(imm, 'minage'),
                                              scale = 1e4)),

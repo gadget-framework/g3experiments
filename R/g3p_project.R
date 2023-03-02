@@ -26,7 +26,8 @@ g3p_project_rec <- function(par,recruitment,rec_pattern = 'project_rec', method=
 
 
 
-g3p_project_advice_error <- function(par,hr_target, advice_rho = 0.4, advice_cv = 0.2, hr_pattern = 'project_hr'){
+g3p_project_advice_error <- function(par,hr_target, advice_rho = 0.423, 
+                                     advice_cv = 0.212, hr_pattern = 'project_hr'){
   
   n_years <- 
     length(par[grepl(hr_pattern,par$switch),'value'] )
