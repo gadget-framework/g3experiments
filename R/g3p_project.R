@@ -64,8 +64,7 @@ g3p_project_rec_arima <- function (recruitment, n_years) {
                                          sd = unique(.data$sigma))/sqrt(1 -  unique(.data$b)^2), 
                   rec = mrec * exp(rec)) %>% 
     .$rec %>% 
-    as.numeric() %>% 
-    as.list()
+    as.numeric()
 }
 
 
