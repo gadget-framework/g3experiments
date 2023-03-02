@@ -81,3 +81,25 @@ g3p_project_rec_constant <- function(recruitment,n_years){
   ## geometric mean
   exp(mean(log(recruitment$recruitment)))
 }
+
+## Function to setup reports for projects
+## Can be merged with g3a_report_detail in the future
+g3p_project_report <- function (actions,
+                                abundance_run_at = 1,
+                                run_at = 11) {
+  c(
+    gadget3::g3a_report_history(
+      actions = actions,
+      var_re = c('__num$', '__wgt$'),
+      out_prefix = "proj_",
+      run_f = ~cur_year_projection,
+      run_at = abundance_run_at),
+    gadget3::g3a_report_history(
+      actions = actions,
+      var_re = c('__renewalnum$', '__spawnednum$', '__predby_'),
+      out_prefix = 'proj_',
+      run_f = ~cur_year_projection,
+      run_at = run_at),
+    NULL
+  )
+}
