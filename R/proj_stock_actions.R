@@ -13,7 +13,7 @@ proj_stock_actions <- function(num_project_years,
     dummy_stock <- 
       gadget3::g3_stock(c(species = gadgetutils::g3_stock_name(imm), 'dummy'),
                         lengthgroups = seq(min(gadget3::g3_stock_def(imm, 'minlen')),
-                                           max(head(gadget3::g3_stock_def(imm, 'maxlen')),-1),
+                                           max(head(gadget3::g3_stock_def(imm, 'maxlen'),-1)),
                                            min(gadget3::g3_stock_def(imm, 'dl')))) %>% 
       gadget3::g3s_livesonareas(areas[c('1')]) %>% 
       gadget3::g3s_age(minage = 0, maxage = gadget3::g3_stock_def(imm, 'minage')-1)
