@@ -20,9 +20,15 @@ proj_stock_actions <- function(num_project_years,
     
   }
   
+  ## Ageing:
+  ## To ensure the numbers match, the spawned population should transition when recruitment occurs
   dummy_actions <- 
     list(
-      gadget3::g3a_age(dummy_stock, output_stocks = list(imm))
+      gadget3::g3a_age(dummy_stock, 
+                       output_stocks = list(imm),
+                       run_f = ~cur_step == 1,
+                       run_at = 1,
+                       transition_at = 8) 
     )
   
   if (is.null(prop_ogive)){
