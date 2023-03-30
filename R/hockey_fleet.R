@@ -14,7 +14,7 @@ g3a_predate_catchability_hockeyfleet <- function (btrigger, hr, proportion_f = 1
     
     for (stock in sum_stocks) {
       biomass_c <- gadget3:::f_substitute(quote(
-        stock_with(s, sum(stock_ss(s__num) * stock_ss(s__wgt) * suit_f)) + biomass_c
+        stock_with(s, sum(s__num * s__wgt * suit_f)) + biomass_c
       ), list(
         s = as.symbol(stock$name),
         s__num = as.symbol(paste0(stock$name, "__num")),
