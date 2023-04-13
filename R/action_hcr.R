@@ -28,6 +28,10 @@
 #        g3a_predate_catchability_totalfleet(g3_timeareadata('lln_landings', lln_landings_data)),
 #            hcr_stock_proportions,
 #            hcr_fleet_proportions)),
+# TODO: g3a_predate_catchability_hcr(g3a_predate_catchability_totalfleet() is nonsense, should be projecting, working off a fixed value
+#  ==> Build-in is_projecting to g3a_predate_catchability_hcr(), so 
+#  =/> Need an initial value, make sure there's an assess run first (but the assessment probably runs outside projection)
+#  ==> quotasteps isn't stock_prop_f, it's timesteps. Ours should be too
 g3a_hcr_tac_singletrigger <- function(
         trigger = g3_parameterized('tac.trigger', by_stock = by_stock),
         hr_low = g3_parameterized('tac.hr.low', by_stock = by_stock),
@@ -68,6 +72,12 @@ g3a_hcr_biomass_weighted <- function(
         assesserr_f = assesserr_f))
 }
 
+
+# ==> For a feed-into-SAM assessment we'd need
+#  * catch / catch_length / catch_weight - total fleet output
+#  * survey_spring / stock_weight / survey_length - Spring survey output
+#  * maturity - Maturity ratio based on survey output
+#  ==> Function to collate for any number of stocks, for whole year.
 g3a_hcr_assess <- function (
         stocks,             # Stock(s) to assess
         fishable_fs,        # List of stock names -> formula to gather, or single value applied to all
@@ -113,6 +123,7 @@ g3a_hcr_assess <- function (
                     stock_ss(hcr__fishable) <- stock_ss(hcr__fishable) + fishable_f
                 }))
             }, list(
+                # TODO: Can't use variable names
                 fishable_f = gadget3:::list_to_stock_switch(fishable_fs),
                 trigger_f = gadget3:::list_to_stock_switch(trigger_fs),
                 gather_run_f = gather_run_f)))
@@ -135,6 +146,7 @@ g3a_hcr_assess <- function (
 
 g3a_predate_catchability_hcr <- function (
     nonprojection_f = 0,
+    # TODO; Multiple
     fleet_prop_fs,
     implerr_f = 1,
     hcr_name = 'hcr') {
