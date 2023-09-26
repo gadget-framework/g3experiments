@@ -73,8 +73,8 @@ g3a_hcr_assess <- function (
         gather_run_f = assess_run_f,     # When to gather data for TAC
         hcr_name = 'hcr',
         run_at = 12) {
-    if (gadget3:::g3_is_stock(stocks)) stocks <- list(stocks)
-    stopifnot(is.list(stocks) & all(sapply(stocks, gadget3:::g3_is_stock)))
+    if (gadget3::g3_is_stock(stocks)) stocks <- list(stocks)
+    stopifnot(is.list(stocks) & all(sapply(stocks, gadget3::g3_is_stock)))
 
     hcr <- gadget3:::g3_storage(hcr_name)
     hcr__trigger <- gadget3:::stock_instance(hcr, 0)
