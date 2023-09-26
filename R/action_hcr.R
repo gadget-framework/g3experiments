@@ -18,7 +18,7 @@
 # Create proportions of TAC assigned to each fleet / stock:
 #
 #    hcr_stock_proportions <- list(0.5)
-#    hcr_fleet_proportions <- quote( stock_param(fleet_stock, 'hcr.prop', value = 1/2) )
+#    hcr_fleet_proportions <- quote( stock_param(predstock, 'hcr.prop', value = 1/2) )
 #
 # Wrap default fleet predation with g3a_predate_catchability_hcr(), to scale predation
 # based on TAC:
@@ -145,6 +145,6 @@ g3a_predate_catchability_hcr <- function (
         (stock_with(hcr, sum(hcr__tac)) * stock_prop_f * fleet_prop_f) * inner_f
     ), list(
         stock_prop_f = gadget3:::list_to_stock_switch(stock_prop_fs, stock_var = "stock"),
-        fleet_prop_f = gadget3:::list_to_stock_switch(fleet_prop_fs, stock_var = "fleet_stock"),
+        fleet_prop_f = gadget3:::list_to_stock_switch(fleet_prop_fs, stock_var = "predstock"),
         inner_f = inner_f)))
 }

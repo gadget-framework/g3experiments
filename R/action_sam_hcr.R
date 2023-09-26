@@ -44,23 +44,23 @@ g3a_hcr_assess_sam <- function (
   out[[gadget3:::step_id(run_at, hcr, action_name, 1)]] <- gadget3:::f_concatenate(c(
     
     lapply(stocks, function (stock) {
-      gadget3:::f_concatenate(lapply(fleets, function(fleet){
+      gadget3:::f_concatenate(lapply(fleets, function(predstock){
         # Copy hcr from parent environment
         hcr <- hcr
         hcr__cn <- hcr__cn
         hcr__cw <- hcr__cw
         stock <- stock
-        fleet_stock_var <- as.symbol(paste0('stock__predby_', fleet$name))
+        predstock_var <- as.symbol(paste0('stock__predby_', predstock$name))
         gadget3:::g3_step(gadget3:::f_substitute(~{
           debug_trace("Collecting data from ", stock)
           if (gather_run_f) stock_iterate(stock, stock_intersect(hcr, {
             
-            stock_ss(hcr__cn) <- stock_ss(hcr__cn) + sum(stock_ss(fleet_stock_var)/stock_ss(stock__wgt))
-            stock_ss(hcr__cw) <- stock_ss(hcr__cw) + sum(stock_ss(fleet_stock_var))/sum(stock_ss(fleet_stock_var)/stock_ss(stock__wgt))
+            stock_ss(hcr__cn) <- stock_ss(hcr__cn) + sum(stock_ss(predstock_var)/stock_ss(stock__wgt))
+            stock_ss(hcr__cw) <- stock_ss(hcr__cw) + sum(stock_ss(predstock_var))/sum(stock_ss(predstock_var)/stock_ss(stock__wgt))
           }))
         }, list(
 
-          fleet_stock_var = fleet_stock_var,
+          predstock_var = predstock_var,
           gather_run_f = gather_run_f)))
       }))
     }),
