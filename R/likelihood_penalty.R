@@ -1,5 +1,7 @@
 # # g3l_bounds_penalty
 # 
+# DEPRECATED: See gadget3::g3l_bounds_penalty
+#
 # Defines penalty functions for a given list of parameters with bounds
 # define parameters as before but before final compilation and optimisation add
 # the penalty to the list of actions:
