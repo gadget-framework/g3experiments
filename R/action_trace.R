@@ -55,7 +55,7 @@ g3a_trace_nan <- function (
                     Rprintf(warn_msg, cur_year, cur_step)
                     on_error
                 }, list(
-                    warn_msg = paste0(var_name, " became NaN at %d-%d, after '", desc, "'\n"),
+                    warn_msg = paste0(var_name, " failed test at %d-%d, after '", desc, "'\n"),
                     test_c = to_test_code(var_name, target_vars[[var_name]]),
                     nan_var = as.symbol(nan_var_names[[var_name]]),
                     on_error = on_error)))))
