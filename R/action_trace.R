@@ -3,6 +3,7 @@
 # actions <- c(actions, list(trace_actions))
 g3a_trace_nan <- function (
         actions,
+        check_positive = FALSE,
         on_error = quote({}),
         var_re = c("__num$", "__wgt$")) {
     out <- new.env(parent = emptyenv())
@@ -12,7 +13,14 @@ g3a_trace_nan <- function (
 
     # Generate code to test if var_name (contains any) NaN
     to_test_code <- function (var_name, var_val) {
-        test_c <- substitute(is.nan(var), list(var = as.symbol(var_name)))
+        # NB: is.na(NaN) is TRUE, converse isn't true
+        test_c <- substitute(
+            is.na(var),
+            list(var = as.symbol(var_name)))
+        if (isTRUE(check_positive)) test_c <- substitute(
+            test_c | var < 0,
+            list(test_c = test_c, var = as.symbol(var_name)))
+
         if (is.array(target_vars[[var_name]])) test_c <- call("any", test_c)
         return(test_c)
     }
