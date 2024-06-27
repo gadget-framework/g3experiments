@@ -3,12 +3,12 @@
 # actions <- c(actions, list(trace_actions))
 g3a_trace_nan <- function (
         actions,
-        browse_on_error = FALSE,
+        on_error = quote({}),
         var_re = c("__num$", "__wgt$")) {
     out <- new.env(parent = emptyenv())
     var_re <- paste(var_re, collapse = "|")
-    post_f <- quote({})
-    if (browse_on_error) post_f <- quote(browser())
+    if (on_error == "browse") on_error <- quote(browser())
+    if (on_error == "stop") on_error <- quote(stop())
 
     # Generate code to test if var_name (contains any) NaN
     to_test_code <- function (var_name, var_val) {
@@ -45,12 +45,12 @@ g3a_trace_nan <- function (
                 if (!nan_var && test_c) {
                     nan_var <- TRUE
                     Rprintf(warn_msg, cur_year, cur_step)
-                    post_f
+                    on_error
                 }, list(
                     warn_msg = paste0(var_name, " became NaN at %d-%d, after '", desc, "'\n"),
                     test_c = to_test_code(var_name, target_vars[[var_name]]),
                     nan_var = as.symbol(nan_var_names[[var_name]]),
-                    post_f = post_f)))))
+                    on_error = on_error)))))
         # Environment should define all nan_var_names
         trace_step <- gadget3:::call_to_formula(trace_step, env = as.environment(structure(
             rep(list(g3_global_formula(init_val = FALSE)), length(nan_var_names)),
