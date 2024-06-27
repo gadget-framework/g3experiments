@@ -10,7 +10,7 @@
 #   list(g3l_bounds_penalty(tmb_param)))
 
 
-g3l_bounds_penalty <- function(tmb_param, weight = 1){
+g3l_bounds_penalty_old <- function(tmb_param, weight = 1){
   
   tmp_func <- function(d){
     param_name <- d$switch 
