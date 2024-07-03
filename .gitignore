@@ -9,3 +9,4 @@
 /inttest/*/*.out
 /inttest/*/*.log
 /demo-ling_TEST/
+*.Rproj
