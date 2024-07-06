@@ -5,6 +5,7 @@ g3a_trace_nan <- function (
         actions,
         check_positive = FALSE,
         on_error = quote({}),
+        print_var = FALSE,
         var_re = c("__num$", "__wgt$")) {
     out <- new.env(parent = emptyenv())
     var_re <- paste(var_re, collapse = "|")
@@ -53,11 +54,14 @@ g3a_trace_nan <- function (
                 if (!nan_var && test_c) {
                     nan_var <- TRUE
                     Rprintf(warn_msg, cur_year, cur_step)
+                    if (print_var) print(drop(var_sym))
                     on_error
                 }, list(
                     warn_msg = paste0(var_name, " failed test at %d-%d, after '", desc, "'\n"),
                     test_c = to_test_code(var_name, target_vars[[var_name]]),
                     nan_var = as.symbol(nan_var_names[[var_name]]),
+                    var_sym = as.symbol(var_name),
+                    print_var = print_var,
                     on_error = on_error)))))
         # Environment should define all nan_var_names
         trace_step <- gadget3:::call_to_formula(trace_step, env = as.environment(structure(
