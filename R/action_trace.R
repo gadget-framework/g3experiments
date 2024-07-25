@@ -37,20 +37,31 @@ g3a_trace_nan <- function (
     # Get variables we're interested in
     target_vars <- all_defns[grep(var_re, names(all_defns))]
 
+    # Make map of var_name to nan_(var_name)
+    nan_var_names <- structure(
+        paste0('nan_', names(target_vars)),
+        names = names(target_vars))
+
+    # Environment for all trace steps, defining nan_vars
+    trace_env <- as.environment(structure(
+        rep(list(g3_global_formula(init_val = FALSE)), length(nan_var_names)),
+        names = nan_var_names ))
+
     for (action_name in names(collated_actions)) {
         desc <- gadget3:::step_find_desc(collated_actions[[action_name]], minor_steps = TRUE)
 
-        # Make map of var_name to nan_(var_name)
-        nan_var_names <- structure(
-            paste0('nan_', names(target_vars)),
-            names = names(target_vars))
+        # Find variables this step alters (no point checking anything else)
+        altered_vars <- intersect(names(target_vars), vapply(
+            gadget3:::f_find(collated_actions[[action_name]], "<-"),
+            function (x) as.character(if (is.call(x[[2]])) x[[2]][[2]] else x[[2]]),
+            character(1) ))
 
         # Step to add after current step, checking NaN status for all vars
         trace_step <- as.call(c(
             as.symbol("{"),  # }
             substitute(
                 debug_label(lbl), list(lbl = paste0("g3a_trace_nan: ", desc))),
-            lapply(names(target_vars), function (var_name) substitute(
+            lapply(altered_vars, function (var_name) substitute(
                 if (!nan_var && test_c) {
                     nan_var <- TRUE
                     Rprintf(warn_msg, cur_year, cur_step)
@@ -63,11 +74,8 @@ g3a_trace_nan <- function (
                     var_sym = as.symbol(var_name),
                     print_var = print_var,
                     on_error = on_error)))))
-        # Environment should define all nan_var_names
-        trace_step <- gadget3:::call_to_formula(trace_step, env = as.environment(structure(
-            rep(list(g3_global_formula(init_val = FALSE)), length(nan_var_names)),
-            names = nan_var_names)))
-        out[[paste0(action_name, ":trace_nan")]] <- trace_step
+
+        out[[paste0(action_name, ":trace_nan")]] <- gadget3:::call_to_formula(trace_step, env = trace_env)
     }
 
     return(as.list(out))
