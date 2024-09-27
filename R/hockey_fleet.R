@@ -71,7 +71,7 @@ g3a_predate_catchability_hockeyfleet <- function (btrigger, hr, proportion_f = 1
   }
   
   out <- gadget3:::f_substitute(
-    ~quota_f * E * cur_step_size * stock_ss(stock__predby_predstock), list(
+    ~quota_f * E * cur_step_size * stock_ss(predprey__suit), list(
       quota_f = quota_f,
       E = E))
   
