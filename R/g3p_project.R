@@ -103,3 +103,124 @@ g3p_project_report <- function (actions,
     NULL
   )
 }
+
+
+g3p_setup_pars <- function(model, 
+                           params, 
+                           blim,
+                           btrigger,
+                           harvest_rates,
+                           harvest_rate_trials,
+                           fleet_proportions,
+                           rec_list,
+                           rec_years = NULL,
+                           rec_scale = 1e-04,
+                           rec_block_size = 7,
+                           rec_method = 'bootstrap',
+                           project_years = 100,
+                           assess_err = FALSE,
+                           advice_rho = 0.423,
+                           advice_cv = 0.212,
+                           blim_pattern = 'spawn_blim',
+                           btrigger_pattern  = '*.hf.btrigger',
+                           rec_pattern = 'project_rec.[0-9]',
+                           hr_pattern = '*.hf.harvest_rate',
+                           quota_prop_pattern = '*.quota.prop'){
+  
+  ## Check model
+  if ('g3_r' %in% class(model)) model <- g3_to_tmb(attr(model, 'actions'))
+  if (!('g3_cpp' %in% class(model))) stop("The 'model' argument should be a g3 model of class 'g3_r' or 'g3_cpp'")
+  if (all(c('switch', 'value', 'optimise', 'parscale') %in% names(params))) params <- list(params)
+  
+  ## Turn optimise to TRUE for parameters we'll be changing, ie, btrigger,
+  ## projected recruits and harvest rates, ensures g3_tmb_par() gets what we need
+  base_par <- attr(model, 'parameter_template')
+  
+  ## Fleet proportions
+  all_fleet_switches <- base_par[grepl(quota_prop_pattern, base_par$switch), 'switch']
+  fleet_proportions$fleet <- paste0(fleet_proportions$fleet, gsub('\\*', '', quota_prop_pattern))
+  if (!all(all_fleet_switches %in% fleet_proportions$fleet)){
+    fleet_proportions <- rbind(fleet_proportions, 
+                               expand.grid(fleet = all_fleet_switches[!(all_fleet_switches %in% fleet_proportions$fleet)],
+                                           prop = 0))
+  }
+  if (sum(fleet_proportions$prop) != 1){
+    warning('Scaling fleet proportions to sum to 1')
+    fleet_proportions$prop <- fleet_proportions$prop/sum(fleet_proportions$prop)
+  }
+  
+  ## BASE PARAMETERS FINISHED
+  ## ONTO VARIANTS: recruitment, btrigger and harvest rates
+  
+  ## Check params, turn into list if its a data.frame
+  if (is.data.frame(params))  params <- list('base' = params)
+  if (!all(names(params[[1]]) %in% names(base_par))) stop("The 'params' argument should be a g3 parameter data.frame or list of g3 parameter data.frames")
+  
+  ## The setup:
+  ## We will simulate the model with each harvest rate (harvest_rates argument)
+  ## n number of times, where n = harvest_rate_trials. If assess_err = TRUE,
+  ## each replicate will have a unique recruitment series and harvest rate, 
+  ## if assess_err = FALSE, each replicate will have a unique recritment series.
+  ## This will be setup for each of the input parameters (argument 'params')
+  
+  simdf <- expand.grid(hr = harvest_rates,
+                       rep = 1:length(params),
+                       trial = 1:harvest_rate_trials)
+  simdf$id <- paste('h', simdf$hr, simdf$trial, simdf$rep, sep = '-')
+  
+  ## Loop over simdf to create list of input parameters
+  out <- 
+    lapply(split(simdf, simdf$id), function(x){
+      
+      ## Take values from estimated pars
+      pars <- base_par
+      switch_ind <- params[[x$rep]]$switch %in% pars$switch
+      pars$value[params[[x$rep]]$switch[switch_ind]] <- params[[x$rep]]$value[switch_ind]
+      
+      ## Ensure all estimated pars plus harvest rates, projected recruitments
+      ## and btrigger are optimise = TRUE. 
+      pars$optimise <- params[[x$rep]]$optimise[match(pars$switch, params[[x$rep]]$switch)]
+      pars[grepl(paste(btrigger_pattern, 
+                       rec_pattern, 
+                       hr_pattern, 
+                       sep = '|'), base_par$switch), 'optimise'] <- TRUE
+      
+      pars <-  
+        g3_init_val(pars, btrigger_pattern, btrigger, optimise = TRUE) |> 
+        g3_init_val(blim_pattern, blim, optimise = TRUE) |> 
+        g3_init_val('project_years', project_years, optimise = FALSE) |> 
+        g3p_project_advice_error(hr_pattern = hr_pattern,
+                                 hr_target = x$hr,
+                                 advice_rho = advice_rho,
+                                 advice_cv = ifelse(assess_err, advice_cv, 0))
+      
+      ## Merge fleet proportions into base parameters
+      pars[match(fleet_proportions$fleet, pars$switch),'value'] <- fleet_proportions$prop
+      
+      ## Projected recruitment may come from a random walk which we will assume 
+      ## if the recruitment pattern is not found.
+      if (any(grepl(rec_pattern, pars$switch))){
+        if (is.null(rec_years)) rec_years <- rec_list[[x$rep]]$year
+        if (rec_method == 'bootstrap'){
+          
+          pars <- g3p_project_rec(pars, 
+                                  rec_pattern = rec_pattern,
+                                  recruitment = rec_list[[x$rep]][rec_list[[x$rep]]$year %in% rec_years,],
+                                  method = rec_method,
+                                  scale = rec_scale,
+                                  block_size = rec_block_size)   
+        }else{
+          pars <- g3p_project_rec(pars, 
+                                  rec_pattern = rec_pattern,
+                                  recruitment = rec_list[[x$rep]][rec_list[[x$rep]]$year %in% rec_years,],
+                                  method = rec_method,
+                                  scale = rec_scale) 
+        }
+        pars$optimise <- TRUE
+      }
+      return(pars)
+    })
+  return(out)
+}
+
+
