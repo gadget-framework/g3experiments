@@ -3,6 +3,7 @@
 # actions <- c(actions, list(trace_actions))
 g3a_trace_nan <- function (
         actions,
+        check_finite = TRUE,
         check_positive = FALSE,
         on_error = quote({}),
         print_var = FALSE,
@@ -12,18 +13,19 @@ g3a_trace_nan <- function (
     if (on_error == "browse") on_error <- quote(browser())
     if (on_error == "stop") on_error <- quote(stop())
 
-    # Generate code to test if var_name (contains any) NaN
+    # Generate condition to see if var_name fails any checks
     to_test_code <- function (var_name, var_val) {
-        # NB: is.na(NaN) is TRUE, converse isn't true
-        test_c <- substitute(
-            is.na(var),
-            list(var = as.symbol(var_name)))
-        if (isTRUE(check_positive)) test_c <- substitute(
-            test_c | var < 0,
-            list(test_c = test_c, var = as.symbol(var_name)))
+        common <- function (test_c) {
+            test_c <- do.call(substitute, list(test_c, list(var = as.symbol(var_name))))
+            if (is.array(var_val)) test_c <- call("any", test_c)
+            return(test_c)
+        }
 
-        if (is.array(target_vars[[var_name]])) test_c <- call("any", test_c)
-        return(test_c)
+        tests <- list()
+        if (isTRUE(check_finite)) tests$check_finite <- common(quote( !is.finite(var) ))
+        if (isTRUE(check_positive)) tests$check_positive <- common(quote( var < 0 ))
+
+        return(rlang::f_rhs(gadget3:::f_chain_op(tests, "|")))
     }
 
     # Form list of definitions as we would do when compiling
