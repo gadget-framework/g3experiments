@@ -55,6 +55,7 @@ g3a_trace_nan <- function (
             gadget3:::f_find(collated_actions[[action_name]], "<-"),
             function (x) as.character(if (is.call(x[[2]])) x[[2]][[2]] else x[[2]]),
             character(1) ))
+        if (length(altered_vars) == 0) next  # Nothing to trace, don't add empty step
 
         # Step to add after current step, checking NaN status for all vars
         trace_step <- as.call(c(
@@ -74,6 +75,9 @@ g3a_trace_nan <- function (
                     var_sym = as.symbol(var_name),
                     print_var = print_var,
                     on_error = on_error)))))
+
+        # Remove disabled print_var, e.g.
+        trace_step <- gadget3:::f_optimize(trace_step)
 
         out[[paste0(action_name, ":trace_nan")]] <- gadget3:::call_to_formula(trace_step, env = trace_env)
     }
