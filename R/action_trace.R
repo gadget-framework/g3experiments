@@ -5,6 +5,7 @@ g3a_trace_nan <- function (
         actions,
         check_finite = TRUE,
         check_positive = FALSE,
+        check_strictly_positive = FALSE,
         on_error = quote({}),
         print_var = FALSE,
         var_re = c("__num$", "__wgt$")) {
@@ -24,6 +25,7 @@ g3a_trace_nan <- function (
         tests <- list()
         if (isTRUE(check_finite)) tests$check_finite <- common(quote( !is.finite(var) ))
         if (isTRUE(check_positive)) tests$check_positive <- common(quote( var < 0 ))
+        if (isTRUE(check_strictly_positive)) tests$check_strictly_positive <- common(quote( var <= 0 ))
 
         return(rlang::f_rhs(gadget3:::f_chain_op(tests, "|")))
     }
